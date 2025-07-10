@@ -35,6 +35,7 @@ export default function RootLayout() {
         <Stack.Screen name="auth/register" />
         <Stack.Screen name="report/new" />
         <Stack.Screen name="report/[id]" />
+        <Stack.Screen name="admin" />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="dark" />
