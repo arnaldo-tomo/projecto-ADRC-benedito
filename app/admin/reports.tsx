@@ -11,18 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { 
-  ArrowLeft, 
-  Search, 
-  Filter, 
-  MapPin, 
-  Clock, 
-  CheckCircle, 
-  AlertTriangle,
-  Eye,
-  MessageSquare,
-  X
-} from 'lucide-react-native';
+import { ArrowLeft, Search, Filter, MapPin, Clock, CircleCheck as CheckCircle, TriangleAlert as AlertTriangle, Eye, MessageSquare, X } from 'lucide-react-native';
 
 const AdminReports = () => {
   const router = useRouter();

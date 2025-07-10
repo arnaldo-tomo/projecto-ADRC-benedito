@@ -9,20 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { 
-  BarChart3, 
-  Users, 
-  FileText, 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
-  Bell,
-  Settings,
-  LogOut,
-  TrendingUp,
-  MapPin,
-  Droplets
-} from 'lucide-react-native';
+import { ChartBar as BarChart3, Users, FileText, TriangleAlert as AlertTriangle, CircleCheck as CheckCircle, Clock, Bell, Settings, LogOut, TrendingUp, MapPin, Droplets } from 'lucide-react-native';
 
 const AdminDashboard = () => {
   const router = useRouter();
