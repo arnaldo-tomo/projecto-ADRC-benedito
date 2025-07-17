@@ -63,3 +63,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/settings', [AdminSettingsController::class, 'update'])->name('settings.update');
     // });
 });
+
+
+//    Route::middleware('admin')->prefix('admin/chat')->group(function () {
+//         Route::get('/conversations', [ChatController::class, 'getConversations']);
+//         Route::get('/conversations/{userId}', [ChatController::class, 'getConversationMessages']);
+//         Route::post('/reply', [ChatController::class, 'sendAdminReply']);
+//         Route::delete('/messages/{messageId}', [ChatController::class, 'deleteMessage']);
+//         Route::get('/statistics', [ChatController::class, 'getStatistics']);
+//     });
