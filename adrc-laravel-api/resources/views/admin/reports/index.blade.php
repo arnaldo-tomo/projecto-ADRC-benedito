@@ -12,13 +12,13 @@
                 <div>
                     <label for="search" class="block text-sm font-medium text-gray-700">Buscar</label>
                     <input type="text" id="search" name="search" value="{{ request('search') }}"
-                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                           class="mt-1 p-2 border block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                            placeholder="Título, descrição, localização...">
                 </div>
 
                 <div>
                     <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                    <select id="status" name="status" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <select id="status" name="status" class="mt-1 p-2 border block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         <option value="">Todos</option>
                         <option value="pendente" {{ request('status') == 'pendente' ? 'selected' : '' }}>Pendente</option>
                         <option value="em_andamento" {{ request('status') == 'em_andamento' ? 'selected' : '' }}>Em Andamento</option>
@@ -28,7 +28,7 @@
 
                 <div>
                     <label for="type" class="block text-sm font-medium text-gray-700">Tipo</label>
-                    <select id="type" name="type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <select id="type" name="type" class="mt-1 block border p-2 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         <option value="">Todos</option>
                         <option value="vazamento" {{ request('type') == 'vazamento' ? 'selected' : '' }}>Vazamento</option>
                         <option value="falta_agua" {{ request('type') == 'falta_agua' ? 'selected' : '' }}>Falta de Água</option>
