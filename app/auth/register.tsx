@@ -1,3 +1,4 @@
+// app/auth/register.tsx
 import React, { useState } from 'react';
 import {
   View,
@@ -23,30 +24,33 @@ import {
   EyeOff,
   ArrowLeft 
 } from 'lucide-react-native';
+import { useAuth } from '../../contexts/AuthContext';
+import { RegisterData } from '../../services/api';
 
 const RegisterScreen = () => {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const { register } = useAuth();
+  const [formData, setFormData] = useState<RegisterData>({
     name: '',
     email: '',
     phone: '',
-    address: '',
     password: '',
-    confirmPassword: '',
+    password_confirmation: '',
+    address: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleRegister = async () => {
-    const { name, email, phone, password, confirmPassword } = formData;
+    const { name, email, phone, password, password_confirmation } = formData;
     
     if (!name.trim() || !email.trim() || !phone.trim() || !password.trim()) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos obrigatórios.');
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (password !== password_confirmation) {
       Alert.alert('Erro', 'As senhas não coincidem.');
       return;
     }
@@ -56,25 +60,37 @@ const RegisterScreen = () => {
       return;
     }
 
+    // Validação básica de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Erro', 'Por favor, insira um email válido.');
+      return;
+    }
+
     setIsLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const result = await register(formData);
       
-      Alert.alert(
-        'Sucesso!',
-        'Conta criada com sucesso. Você já pode fazer login.',
-        [{ text: 'OK', onPress: () => router.push('/auth/login') }]
-      );
+      if (result.success) {
+        Alert.alert(
+          'Sucesso!',
+          'Conta criada com sucesso. Bem-vindo ao AdRC!',
+          [{ text: 'OK' }]
+        );
+        // Não precisa navegar manualmente, o ProtectedRoute cuidará disso
+      } else {
+        Alert.alert('Erro', result.message || 'Erro ao criar conta. Tente novamente.');
+      }
     } catch (error) {
-      Alert.alert('Erro', 'Ocorreu um erro ao criar a conta. Tente novamente.');
+      console.error('Register error:', error);
+      Alert.alert('Erro', 'Erro ao conectar com o servidor. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const updateFormData = (field: string, value: string) => {
+  const updateFormData = (field: keyof RegisterData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -90,6 +106,7 @@ const RegisterScreen = () => {
             <TouchableOpacity 
               style={styles.backButton} 
               onPress={() => router.back()}
+              disabled={isLoading}
             >
               <ArrowLeft color="#1F2937" size={24} />
             </TouchableOpacity>
@@ -123,6 +140,7 @@ const RegisterScreen = () => {
                 value={formData.name}
                 onChangeText={(value) => updateFormData('name', value)}
                 autoComplete="name"
+                editable={!isLoading}
               />
             </View>
 
@@ -138,6 +156,7 @@ const RegisterScreen = () => {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
+                editable={!isLoading}
               />
             </View>
 
@@ -152,6 +171,7 @@ const RegisterScreen = () => {
                 onChangeText={(value) => updateFormData('phone', value)}
                 keyboardType="phone-pad"
                 autoComplete="tel"
+                editable={!isLoading}
               />
             </View>
 
@@ -165,6 +185,7 @@ const RegisterScreen = () => {
                 value={formData.address}
                 onChangeText={(value) => updateFormData('address', value)}
                 multiline
+                editable={!isLoading}
               />
             </View>
 
@@ -179,10 +200,12 @@ const RegisterScreen = () => {
                 onChangeText={(value) => updateFormData('password', value)}
                 secureTextEntry={!showPassword}
                 autoComplete="new-password"
+                editable={!isLoading}
               />
               <TouchableOpacity
                 style={styles.eyeIcon}
                 onPress={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
               >
                 {showPassword ? (
                   <EyeOff color="#6B7280" size={20} />
@@ -199,14 +222,16 @@ const RegisterScreen = () => {
               <TextInput
                 style={styles.input}
                 placeholder="Confirmar senha *"
-                value={formData.confirmPassword}
-                onChangeText={(value) => updateFormData('confirmPassword', value)}
+                value={formData.password_confirmation}
+                onChangeText={(value) => updateFormData('password_confirmation', value)}
                 secureTextEntry={!showConfirmPassword}
                 autoComplete="new-password"
+                editable={!isLoading}
               />
               <TouchableOpacity
                 style={styles.eyeIcon}
                 onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                disabled={isLoading}
               >
                 {showConfirmPassword ? (
                   <EyeOff color="#6B7280" size={20} />
@@ -214,6 +239,12 @@ const RegisterScreen = () => {
                   <Eye color="#6B7280" size={20} />
                 )}
               </TouchableOpacity>
+            </View>
+
+            <View style={styles.passwordInfo}>
+              <Text style={styles.passwordInfoText}>
+                A senha deve ter pelo menos 6 caracteres
+              </Text>
             </View>
 
             <TouchableOpacity
@@ -228,7 +259,10 @@ const RegisterScreen = () => {
 
             <View style={styles.loginContainer}>
               <Text style={styles.loginText}>Já tem uma conta? </Text>
-              <TouchableOpacity onPress={() => router.push('/auth/login')}>
+              <TouchableOpacity 
+                onPress={() => router.push('/auth/login')}
+                disabled={isLoading}
+              >
                 <Text style={styles.loginLink}>Fazer login</Text>
               </TouchableOpacity>
             </View>
@@ -342,12 +376,20 @@ const styles = StyleSheet.create({
   eyeIcon: {
     padding: 4,
   },
+  passwordInfo: {
+    marginBottom: 24,
+  },
+  passwordInfoText: {
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+    color: '#6B7280',
+    textAlign: 'center',
+  },
   registerButton: {
     backgroundColor: '#1E40AF',
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 8,
     marginBottom: 24,
   },
   registerButtonDisabled: {
