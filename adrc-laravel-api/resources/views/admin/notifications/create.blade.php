@@ -11,7 +11,7 @@
 @endsection
 
 @section('content')
-    <div class="max-w-4xl mx-auto">
+    <div class=" mx-auto">
         <form method="POST" action="{{ route('admin.notifications.store') }}" x-data="notificationForm()" class="space-y-6">
             @csrf
 
@@ -23,7 +23,7 @@
                         <div>
                             <label for="title" class="block text-sm font-medium text-gray-700">Título *</label>
                             <input type="text" id="title" name="title" required maxlength="255"
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                   class="mt-1 border p-3 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                    placeholder="Ex: Interrupção Programada"
                                    value="{{ old('title') }}">
                             @error('title')
@@ -33,7 +33,7 @@
 
                         <div>
                             <label for="type" class="block text-sm font-medium text-gray-700">Tipo *</label>
-                            <select id="type" name="type" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <select id="type" name="type" required class="mt-1 border p-3 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                 <option value="">Selecione o tipo</option>
                                 <option value="info" {{ old('type') == 'info' ? 'selected' : '' }}>Informação</option>
                                 <option value="warning" {{ old('type') == 'warning' ? 'selected' : '' }}>Aviso</option>
@@ -49,7 +49,7 @@
                     <div class="mt-6">
                         <label for="message" class="block text-sm font-medium text-gray-700">Mensagem *</label>
                         <textarea id="message" name="message" required rows="4" maxlength="1000"
-                                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                  class="mt-1 block border p-2 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                   placeholder="Digite a mensagem completa...">{{ old('message') }}</textarea>
                         <p class="mt-2 text-sm text-gray-500">
                             <span x-text="$el.previousElementSibling.value.length"></span>/1000 caracteres
@@ -72,7 +72,7 @@
                                 <label class="flex items-center">
                                     <input type="radio" name="target_audience" value="all"
                                            x-model="targetAudience"
-                                           class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
+                                           class="focus:ring-blue-500 border p-2 h-4 w-4 text-blue-600 border-gray-300"
                                            {{ old('target_audience') == 'all' ? 'checked' : '' }}>
                                     <span class="ml-2 text-sm text-gray-700">Todos os usuários</span>
                                 </label>
@@ -80,7 +80,7 @@
                                 <label class="flex items-center">
                                     <input type="radio" name="target_audience" value="location"
                                            x-model="targetAudience"
-                                           class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
+                                           class="focus:ring-blue-500 border p-2 h-4 w-4 text-blue-600 border-gray-300"
                                            {{ old('target_audience') == 'location' ? 'checked' : '' }}>
                                     <span class="ml-2 text-sm text-gray-700">Por localização</span>
                                 </label>
@@ -88,7 +88,7 @@
                                 <label class="flex items-center">
                                     <input type="radio" name="target_audience" value="active"
                                            x-model="targetAudience"
-                                           class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
+                                           class="focus:ring-blue-500 h-4 w-4 border p-2 text-blue-600 border-gray-300"
                                            {{ old('target_audience') == 'active' ? 'checked' : '' }}>
                                     <span class="ml-2 text-sm text-gray-700">Usuários ativos (últimos 7 dias)</span>
                                 </label>
@@ -101,7 +101,7 @@
                         <div x-show="targetAudience === 'location'" x-cloak>
                             <label for="location" class="block text-sm font-medium text-gray-700">Localização Específica</label>
                             <input type="text" id="location" name="location" maxlength="255"
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                   class="mt-1 block w-full border p-2 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                    placeholder="Ex: Bairro da Manga, Av. Eduardo Mondlane..."
                                    value="{{ old('location') }}">
                             @error('location')
@@ -120,7 +120,7 @@
                         <div class="flex items-center">
                             <input type="checkbox" id="is_scheduled" name="is_scheduled" value="1"
                                    x-model="isScheduled"
-                                   class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                                   class="focus:ring-blue-500 h-4 border p-2 w-4 text-blue-600 border-gray-300 rounded"
                                    {{ old('is_scheduled') ? 'checked' : '' }}>
                             <label for="is_scheduled" class="ml-2 text-sm text-gray-700">
                                 Agendar envio
@@ -130,7 +130,7 @@
                         <div x-show="isScheduled" x-cloak>
                             <label for="scheduled_at" class="block text-sm font-medium text-gray-700">Data e Hora do Envio</label>
                             <input type="datetime-local" id="scheduled_at" name="scheduled_at"
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                   class="mt-1 block w-full border p-2 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                    value="{{ old('scheduled_at') }}">
                             @error('scheduled_at')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
