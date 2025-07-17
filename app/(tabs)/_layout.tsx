@@ -100,6 +100,19 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          title: 'Notificações',
+          tabBarIcon: ({ color, size, focused }) => (
+            <User 
+              color={color} 
+              size={focused ? 24 : 22}
+              strokeWidth={focused ? 2.5 : 2}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
