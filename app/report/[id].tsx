@@ -320,13 +320,7 @@ const ReportDetailScreen = () => {
             <Text style={styles.primaryButtonText}>Entrar em Contato</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.secondaryButton}
-            onPress={() => router.push('/(tabs)/map')}
-          >
-            <MapPin color="#1E40AF" size={20} />
-            <Text style={styles.secondaryButtonText}>Ver no Mapa</Text>
-          </TouchableOpacity>
+       
         </View>
       </ScrollView>
     </SafeAreaView>
