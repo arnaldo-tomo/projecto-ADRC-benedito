@@ -1,3 +1,4 @@
+// app/auth/login.tsx
 import React, { useState } from 'react';
 import {
   View,
@@ -12,9 +13,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Droplets, Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
+import { useAuth } from '../../contexts/AuthContext';
 
 const LoginScreen = () => {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -29,13 +32,17 @@ const LoginScreen = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const result = await login(email, password);
       
-      // For demo purposes, accept any email/password combination
-      router.replace('/(tabs)');
+      if (result.success) {
+        // Não precisa navegar manualmente, o ProtectedRoute cuidará disso
+        console.log('Login realizado com sucesso!');
+      } else {
+        Alert.alert('Erro', result.message || 'Credenciais inválidas. Tente novamente.');
+      }
     } catch (error) {
-      Alert.alert('Erro', 'Credenciais inválidas. Tente novamente.');
+      console.error('Login error:', error);
+      Alert.alert('Erro', 'Erro ao conectar com o servidor. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -69,6 +76,17 @@ const LoginScreen = () => {
             </Text>
           </View>
 
+          {/* Demo Info */}
+          <View style={styles.demoContainer}>
+            <Text style={styles.demoTitle}>💡 Dica para teste:</Text>
+            <Text style={styles.demoText}>
+              Use qualquer email e senha válidos para entrar
+            </Text>
+            <Text style={styles.demoText}>
+              Exemplo: admin@adrc.com / password123
+            </Text>
+          </View>
+
           {/* Form */}
           <View style={styles.formContainer}>
             <View style={styles.inputContainer}>
@@ -83,6 +101,7 @@ const LoginScreen = () => {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
+                editable={!isLoading}
               />
             </View>
 
@@ -97,10 +116,12 @@ const LoginScreen = () => {
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
                 autoComplete="password"
+                editable={!isLoading}
               />
               <TouchableOpacity
                 style={styles.eyeIcon}
                 onPress={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
               >
                 {showPassword ? (
                   <EyeOff color="#6B7280" size={20} />
@@ -113,6 +134,7 @@ const LoginScreen = () => {
             <TouchableOpacity
               style={styles.forgotPassword}
               onPress={() => Alert.alert('Recuperar Senha', 'Funcionalidade em desenvolvimento')}
+              disabled={isLoading}
             >
               <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
             </TouchableOpacity>
@@ -129,7 +151,7 @@ const LoginScreen = () => {
 
             <View style={styles.registerContainer}>
               <Text style={styles.registerText}>Não tem uma conta? </Text>
-              <TouchableOpacity onPress={handleRegister}>
+              <TouchableOpacity onPress={handleRegister} disabled={isLoading}>
                 <Text style={styles.registerLink}>Criar conta</Text>
               </TouchableOpacity>
             </View>
@@ -155,7 +177,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 48,
+    marginBottom: 32,
   },
   logoIcon: {
     width: 80,
@@ -179,7 +201,7 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 24,
   },
   welcomeTitle: {
     fontSize: 24,
@@ -192,6 +214,26 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     color: '#6B7280',
     textAlign: 'center',
+  },
+  demoContainer: {
+    backgroundColor: '#EEF2FF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#C7D2FE',
+  },
+  demoTitle: {
+    fontSize: 14,
+    fontFamily: 'Inter-SemiBold',
+    color: '#1E40AF',
+    marginBottom: 8,
+  },
+  demoText: {
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+    color: '#3730A3',
+    marginBottom: 4,
   },
   formContainer: {
     backgroundColor: '#FFFFFF',
