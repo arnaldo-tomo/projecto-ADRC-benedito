@@ -1,56 +1,137 @@
 {
   "expo": {
-    "name": "bolt-expo-nativewind",
-    "slug": "bolt-expo-nativewind",
+    "name": "AdRC - Águas da Região Centro",
+"slug": "bolt-expo-nativewind",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "adrc",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1E40AF"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "mz.adrc.mobile",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Este app usa a câmera para capturar fotos de ocorrências de água.",
+        "NSPhotoLibraryUsageDescription": "Este app usa a galeria para selecionar fotos de ocorrências.",
+        "NSLocationWhenInUseUsageDescription": "Este app usa sua localização para identificar locais de ocorrências com precisão.",
+        "NSUserNotificationsUsageDescription": "Este app envia notificações importantes sobre o abastecimento de água e atualizações de ocorrências."
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "web": {
       "bundler": "metro",
       "output": "single",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "AdRC - Águas da Região Centro",
+      "shortName": "AdRC",
+      "description": "Aplicativo oficial da Águas da Região Centro para gestão e comunicação com a população.",
+      "themeColor": "#1E40AF",
+      "backgroundColor": "#FFFFFF"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
+        "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#1E40AF"
       },
+      "package": "mz.adrc.mobile",
+      "versionCode": 1,
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.ACCESS_COARSE_LOCATION"
-      ]
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.VIBRATE",
+        "android.permission.READ_PHONE_STATE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WAKE_LOCK",
+        "com.google.android.c2dm.permission.RECEIVE"
+      ],
+      "icon": "./assets/images/icon.png"
     },
-    "plugins": ["expo-router", "expo-font", "expo-web-browser",
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-web-browser",
       [
         "expo-camera",
         {
-          "cameraPermission": "This app uses the camera to scan barcodes and QR codes."
+          "cameraPermission": "Este app usa a câmera para capturar fotos de vazamentos e outros problemas no abastecimento de água."
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "This app uses the photo library to select images."
+          "photosPermission": "Este app acessa sua galeria para anexar fotos às ocorrências reportadas."
         }
       ],
       [
         "expo-location",
         {
-          "locationPermission": "This app uses your location to provide location-based features."
+          "locationPermission": "Este app usa sua localização para identificar com precisão o local das ocorrências reportadas e fornecer serviços baseados em localização."
         }
       ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#1E40AF",
+          "defaultChannel": "adrc_notifications",
+          "sounds": [
+            "./assets/notification.wav"
+          ],
+          "mode": "production"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#1E40AF"
+        }
+      ],
+
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "your-expo-project-id-here"
+      }
+    },
+    "owner": "adrc-mozambique",
+    "notification": {
+      "icon": "./assets/images/icon.png",
+      "color": "#1E40AF",
+      "iosDisplayInForeground": true,
+      "androidMode": "default",
+      "androidCollapsedTitle": "#{unread_notifications} novas notificações da AdRC"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/your-expo-project-id-here"
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
     }
   }
 }
