@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Plus, FileText, Clock, CircleCheck as CheckCircle, TriangleAlert as AlertTriangle, MapPin } from 'lucide-react-native';
+import { Plus, FileText, Clock, CircleCheck as CheckCircle, TriangleAlert as AlertTriangle, } from 'lucide-react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import apiService, { Report } from '../../services/api';
 
@@ -229,10 +229,6 @@ const ReportsScreen = () => {
                   {report.description}
                 </Text>
 
-                <View style={styles.locationContainer}>
-                  <MapPin color="#6B7280" size={16} />
-                  <Text style={styles.locationText}>{report.location}</Text>
-                </View>
 
                 <View style={styles.reportFooter}>
                   <Text style={styles.dateText}>
