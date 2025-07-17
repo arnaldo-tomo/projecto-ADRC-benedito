@@ -85,21 +85,12 @@ class NotificationController extends Controller
     {
         $users = $this->getTargetUsers($notification);
 
-        $userNotifications = [];
-        foreach ($users as $user) {
-            $userNotifications[] = [
-                'user_id' => $user->id,
-                'notification_id' => $notification->id,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
-
-        UserNotification::insert($userNotifications);
+        // NÃO criar UserNotification aqui
+        // Os registros serão criados automaticamente quando os apps consultarem
 
         $notification->update([
             'recipients_count' => count($users),
-            'sent_at' => now(),
+            'sent_at' => now(), // IMPORTANTE: Marcar como enviada
         ]);
     }
 
