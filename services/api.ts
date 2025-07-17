@@ -173,7 +173,14 @@ class ApiService {
   async getUnreadMessagesCount(): Promise<ApiResponse<{ count: number }>> {
     return this.request<ApiResponse<{ count: number }>>('/chat/messages/unread-count');
   }
+
+  async getNotificationsAfter(timestamp: string): Promise<ApiResponse<NotificationModel[]>> {
+    const query = `?after=${encodeURIComponent(timestamp)}`;
+    return this.request<ApiResponse<NotificationModel[]>>(`/notifications/new${query}`);
+  }
+
 }
+
 
 // Types
 export interface ApiResponse<T> {
@@ -183,6 +190,15 @@ export interface ApiResponse<T> {
   errors?: Record<string, string[]>;
 }
 
+export interface Notification {
+  id: number;
+  title: string;
+  message: string;
+  type: 'info' | 'warning' | 'success' | 'emergency';
+  created_at: string;
+  read_at?: string;
+//   is_read: boolean;
+}
 export interface AuthResponse {
   success: boolean;
   message: string;
