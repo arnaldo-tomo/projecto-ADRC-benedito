@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// app/(tabs)/reports.tsx
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,49 +7,48 @@ import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Plus, FileText, Clock, CircleCheck as CheckCircle, TriangleAlert as AlertTriangle, MapPin } from 'lucide-react-native';
+import { useAuth } from '../../contexts/AuthContext';
+import apiService, { Report } from '../../services/api';
 
 const ReportsScreen = () => {
   const router = useRouter();
+  const { user } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
-  const [reports] = useState([
-    {
-      id: 1,
-      type: 'Vazamento',
-      location: 'Rua da Manga, 123',
-      status: 'em_andamento',
-      date: '2024-01-15',
-      time: '14:30',
-      priority: 'alta',
-    },
-    {
-      id: 2,
-      type: 'Falta de Água',
-      location: 'Av. Eduardo Mondlane, 456',
-      status: 'resolvido',
-      date: '2024-01-10',
-      time: '09:15',
-      priority: 'media',
-    },
-    {
-      id: 3,
-      type: 'Pressão Baixa',
-      location: 'Bairro da Munhava',
-      status: 'pendente',
-      date: '2024-01-08',
-      time: '16:45',
-      priority: 'baixa',
-    },
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const onRefresh = () => {
+  useEffect(() => {
+    loadReports();
+  }, []);
+
+  const loadReports = async () => {
+    try {
+      setError(null);
+      const response = await apiService.getReports();
+      
+      if (response.success) {
+        setReports(response.data.data);
+      } else {
+        setError('Erro ao carregar ocorrências');
+      }
+    } catch (error: any) {
+      console.error('Error loading reports:', error);
+      setError('Erro ao carregar ocorrências. Verifique sua conexão.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onRefresh = async () => {
     setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
+    await loadReports();
+    setRefreshing(false);
   };
 
   const getStatusIcon = (status: string) => {
@@ -61,19 +61,6 @@ const ReportsScreen = () => {
         return <AlertTriangle color="#EF4444" size={20} />;
       default:
         return <FileText color="#6B7280" size={20} />;
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'resolvido':
-        return 'Resolvido';
-      case 'em_andamento':
-        return 'Em Andamento';
-      case 'pendente':
-        return 'Pendente';
-      default:
-        return 'Desconhecido';
     }
   };
 
@@ -103,6 +90,30 @@ const ReportsScreen = () => {
     }
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR');
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('pt-BR', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1E40AF" />
+          <Text style={styles.loadingText}>Carregando ocorrências...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -114,6 +125,15 @@ const ReportsScreen = () => {
           <Plus color="#FFFFFF" size={20} />
         </TouchableOpacity>
       </View>
+
+      {error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity onPress={loadReports} style={styles.retryButton}>
+            <Text style={styles.retryButtonText}>Tentar Novamente</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <ScrollView
         refreshControl={
@@ -129,9 +149,43 @@ const ReportsScreen = () => {
             <Text style={styles.emptyMessage}>
               Você ainda não reportou nenhuma ocorrência. Toque no botão "+" para criar uma.
             </Text>
+            <TouchableOpacity 
+              style={styles.createFirstButton}
+              onPress={() => router.push('/report/new')}
+            >
+              <Plus color="#FFFFFF" size={20} />
+              <Text style={styles.createFirstButtonText}>Criar Primeira Ocorrência</Text>
+            </TouchableOpacity>
           </View>
         ) : (
           <View style={styles.reportsList}>
+            {/* Stats Summary */}
+            <View style={styles.statsContainer}>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{reports.length}</Text>
+                <Text style={styles.statLabel}>Total</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>
+                  {reports.filter(r => r.status === 'resolvido').length}
+                </Text>
+                <Text style={styles.statLabel}>Resolvidas</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>
+                  {reports.filter(r => r.status === 'em_andamento').length}
+                </Text>
+                <Text style={styles.statLabel}>Em Andamento</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>
+                  {reports.filter(r => r.status === 'pendente').length}
+                </Text>
+                <Text style={styles.statLabel}>Pendentes</Text>
+              </View>
+            </View>
+
+            {/* Reports List */}
             {reports.map((report) => (
               <TouchableOpacity
                 key={report.id}
@@ -140,7 +194,8 @@ const ReportsScreen = () => {
               >
                 <View style={styles.reportHeader}>
                   <View style={styles.reportTitleContainer}>
-                    <Text style={styles.reportType}>{report.type}</Text>
+                    <Text style={styles.reportType}>{report.type_text}</Text>
+                    <Text style={styles.reportTitle}>{report.title}</Text>
                     <View
                       style={[
                         styles.priorityBadge,
@@ -153,7 +208,7 @@ const ReportsScreen = () => {
                           { color: getPriorityColor(report.priority) },
                         ]}
                       >
-                        {report.priority.toUpperCase()}
+                        {report.priority_text}Tudo
                       </Text>
                     </View>
                   </View>
@@ -165,10 +220,14 @@ const ReportsScreen = () => {
                         { color: getStatusColor(report.status) },
                       ]}
                     >
-                      {getStatusText(report.status)}
+                      {report.status_text}
                     </Text>
                   </View>
                 </View>
+
+                <Text style={styles.reportDescription} numberOfLines={2}>
+                  {report.description}
+                </Text>
 
                 <View style={styles.locationContainer}>
                   <MapPin color="#6B7280" size={16} />
@@ -177,8 +236,13 @@ const ReportsScreen = () => {
 
                 <View style={styles.reportFooter}>
                   <Text style={styles.dateText}>
-                    {new Date(report.date).toLocaleDateString('pt-BR')} às {report.time}
+                    {formatDate(report.created_at)} às {formatTime(report.created_at)}
                   </Text>
+                  {report.resolved_at && (
+                    <Text style={styles.resolvedText}>
+                      Resolvido em {formatDate(report.resolved_at)}
+                    </Text>
+                  )}
                 </View>
               </TouchableOpacity>
             ))}
@@ -193,6 +257,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F9FAFB',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    color: '#6B7280',
   },
   header: {
     flexDirection: 'row',
@@ -217,6 +292,33 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  errorContainer: {
+    margin: 20,
+    padding: 16,
+    backgroundColor: '#FEF2F2',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#FECACA',
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#EF4444',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  retryButton: {
+    backgroundColor: '#EF4444',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Inter-SemiBold',
+  },
   scrollContainer: {
     flex: 1,
   },
@@ -240,9 +342,51 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     textAlign: 'center',
     lineHeight: 24,
+    marginBottom: 24,
+  },
+  createFirstButton: {
+    backgroundColor: '#1E40AF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+    gap: 8,
+  },
+  createFirstButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
   },
   reportsList: {
     padding: 20,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    justifyContent: 'space-around',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statNumber: {
+    fontSize: 24,
+    fontFamily: 'Inter-Bold',
+    color: '#1E40AF',
+  },
+  statLabel: {
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+    color: '#6B7280',
+    marginTop: 4,
   },
   reportCard: {
     backgroundColor: '#FFFFFF',
@@ -263,8 +407,15 @@ const styles = StyleSheet.create({
   },
   reportTitleContainer: {
     flex: 1,
+    marginRight: 12,
   },
   reportType: {
+    fontSize: 12,
+    fontFamily: 'Inter-SemiBold',
+    color: '#1E40AF',
+    marginBottom: 4,
+  },
+  reportTitle: {
     fontSize: 18,
     fontFamily: 'Inter-SemiBold',
     color: '#1F2937',
@@ -277,7 +428,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   priorityText: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: 'Inter-SemiBold',
   },
   statusContainer: {
@@ -288,6 +439,13 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 14,
     fontFamily: 'Inter-SemiBold',
+  },
+  reportDescription: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#6B7280',
+    lineHeight: 20,
+    marginBottom: 12,
   },
   locationContainer: {
     flexDirection: 'row',
@@ -310,6 +468,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#9CA3AF',
+  },
+  resolvedText: {
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+    color: '#10B981',
+    marginTop: 4,
   },
 });
 
