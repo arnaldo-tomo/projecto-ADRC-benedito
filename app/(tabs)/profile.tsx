@@ -104,7 +104,7 @@ const ProfileScreen = () => {
             </View>
             
             <View style={styles.infoRow}>
-              <MapPin color="#6B7280" size={20} />
+      
               <Text style={styles.infoLabel}>Endereço</Text>
               <Text style={styles.infoValue}>{user?.address || 'Não informado'}</Text>
             </View>
