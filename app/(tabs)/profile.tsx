@@ -1,3 +1,4 @@
+// app/(tabs)/profile.tsx
 import React, { useState } from 'react';
 import {
   View,
@@ -11,9 +12,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { User, Settings, Bell, Shield, CircleHelp as HelpCircle, LogOut, ChevronRight, Phone, Mail, MapPin, FileText } from 'lucide-react-native';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ProfileScreen = () => {
   const router = useRouter();
+  const { user, logout } = useAuth();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [locationEnabled, setLocationEnabled] = useState(true);
 
@@ -23,7 +26,14 @@ const ProfileScreen = () => {
       'Tem certeza que deseja sair da sua conta?',
       [
         { text: 'Cancelar', style: 'cancel' },
-        { text: 'Sair', style: 'destructive', onPress: () => router.push('/auth/login') },
+        { 
+          text: 'Sair', 
+          style: 'destructive', 
+          onPress: async () => {
+            await logout();
+            router.replace('/auth/login');
+          }
+        },
       ]
     );
   };
@@ -39,13 +49,12 @@ const ProfileScreen = () => {
     );
   };
 
-  const userInfo = {
-    name: 'João Silva',
-    email: 'joao.silva@email.com',
-    phone: '+258 84 123 4567',
-    address: 'Rua da Manga, 123, Beira',
-    totalReports: 12,
-    resolvedReports: 8,
+  const handleEditProfile = () => {
+    Alert.alert(
+      'Editar Perfil',
+      'Funcionalidade em desenvolvimento. Em breve você poderá editar suas informações.',
+      [{ text: 'OK' }]
+    );
   };
 
   return (
@@ -56,20 +65,23 @@ const ProfileScreen = () => {
           <View style={styles.avatarContainer}>
             <User color="#FFFFFF" size={32} />
           </View>
-          <Text style={styles.userName}>{userInfo.name}</Text>
-          <Text style={styles.userEmail}>{userInfo.email}</Text>
+          <Text style={styles.userName}>{user?.name || 'Usuário'}</Text>
+          <Text style={styles.userEmail}>{user?.email || 'usuario@email.com'}</Text>
+          <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
+            <Text style={styles.editButtonText}>Editar Perfil</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Stats Cards */}
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
             <FileText color="#1E40AF" size={24} />
-            <Text style={styles.statNumber}>{userInfo.totalReports}</Text>
+            <Text style={styles.statNumber}>{user?.total_reports || 0}</Text>
             <Text style={styles.statLabel}>Ocorrências</Text>
           </View>
           <View style={styles.statCard}>
             <Settings color="#10B981" size={24} />
-            <Text style={styles.statNumber}>{userInfo.resolvedReports}</Text>
+            <Text style={styles.statNumber}>{user?.resolved_reports || 0}</Text>
             <Text style={styles.statLabel}>Resolvidas</Text>
           </View>
         </View>
@@ -82,19 +94,19 @@ const ProfileScreen = () => {
             <View style={styles.infoRow}>
               <Mail color="#6B7280" size={20} />
               <Text style={styles.infoLabel}>Email</Text>
-              <Text style={styles.infoValue}>{userInfo.email}</Text>
+              <Text style={styles.infoValue}>{user?.email || 'Não informado'}</Text>
             </View>
             
             <View style={styles.infoRow}>
               <Phone color="#6B7280" size={20} />
               <Text style={styles.infoLabel}>Telefone</Text>
-              <Text style={styles.infoValue}>{userInfo.phone}</Text>
+              <Text style={styles.infoValue}>{user?.phone || 'Não informado'}</Text>
             </View>
             
             <View style={styles.infoRow}>
               <MapPin color="#6B7280" size={20} />
               <Text style={styles.infoLabel}>Endereço</Text>
-              <Text style={styles.infoValue}>{userInfo.address}</Text>
+              <Text style={styles.infoValue}>{user?.address || 'Não informado'}</Text>
             </View>
           </View>
         </View>
@@ -137,7 +149,7 @@ const ProfileScreen = () => {
           <Text style={styles.sectionTitle}>Opções</Text>
           
           <View style={styles.menuCard}>
-            <TouchableOpacity style={styles.menuItem}>
+            <TouchableOpacity style={styles.menuItem} onPress={handleEditProfile}>
               <View style={styles.menuLeft}>
                 <Settings color="#6B7280" size={20} />
                 <Text style={styles.menuLabel}>Configurações Avançadas</Text>
@@ -160,8 +172,33 @@ const ProfileScreen = () => {
               </View>
               <ChevronRight color="#9CA3AF" size={20} />
             </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(tabs)/reports')}>
+              <View style={styles.menuLeft}>
+                <FileText color="#6B7280" size={20} />
+                <Text style={styles.menuLabel}>Minhas Ocorrências</Text>
+              </View>
+              <ChevronRight color="#9CA3AF" size={20} />
+            </TouchableOpacity>
           </View>
         </View>
+
+        {/* Account Info */}
+        {user?.created_at && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Informações da Conta</Text>
+            <View style={styles.accountCard}>
+              <Text style={styles.accountLabel}>Membro desde</Text>
+              <Text style={styles.accountValue}>
+                {new Date(user.created_at).toLocaleDateString('pt-BR')}
+              </Text>
+              <Text style={styles.accountLabel}>Status da Conta</Text>
+              <Text style={[styles.accountValue, styles.statusActive]}>
+                {user.status === 'active' ? 'Ativa' : 'Inativa'}
+              </Text>
+            </View>
+          </View>
+        )}
 
         {/* Logout Button */}
         <View style={styles.logoutContainer}>
@@ -212,6 +249,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Inter-Regular',
     color: '#6B7280',
+    marginBottom: 16,
+  },
+  editButton: {
+    backgroundColor: '#EEF2FF',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  editButtonText: {
+    color: '#1E40AF',
+    fontSize: 14,
+    fontFamily: 'Inter-SemiBold',
   },
   statsContainer: {
     flexDirection: 'row',
@@ -338,6 +387,32 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     color: '#1F2937',
     marginLeft: 12,
+  },
+  accountCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  accountLabel: {
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
+    color: '#6B7280',
+    marginBottom: 4,
+  },
+  accountValue: {
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    color: '#1F2937',
+    marginBottom: 16,
+  },
+  statusActive: {
+    color: '#10B981',
+    fontFamily: 'Inter-SemiBold',
   },
   logoutContainer: {
     paddingHorizontal: 20,
