@@ -29,12 +29,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('reports', ReportController::class);
 
     // Notifications routes
-    Route::get('/notifications', [NotificationController::class, 'index']);
+    // Route::get('/notifications', [NotificationController::class, 'index']);
+    // Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
+    // Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+    // Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+
+
+ // Notificações
+ Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/new', [NotificationController::class, 'getNewNotifications']);
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
-
-    // Chat routes
     // Route::get('/chat/messages', [ChatController::class, 'index']);
     // Route::post('/chat/messages', [ChatController::class, 'store']);
     // Route::post('/chat/messages/read', [ChatController::class, 'markAsRead']);
