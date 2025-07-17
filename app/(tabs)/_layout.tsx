@@ -49,7 +49,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="map"
         options={{
           title: 'Mapa',
@@ -57,7 +57,7 @@ export default function TabLayout() {
             <MapPin color={color} size={size} />
           ),
         }}
-      />
+      /> */}
       <Tabs.Screen
         name="profile"
         options={{
