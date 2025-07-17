@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Platform } from 'react-native';
-import { Chrome as Home, FileText, MessageCircle, MapPin, User } from 'lucide-react-native';
+import { Home, FileText, MessageCircle, User } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -8,17 +8,39 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: '#1E40AF',
-        tabBarInactiveTintColor: '#6B7280',
+        tabBarInactiveTintColor: '#9CA3AF',
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopWidth: 1,
-          borderTopColor: '#E5E7EB',
-          paddingBottom: Platform.OS === 'ios' ? 20 : 5,
-          height: Platform.OS === 'ios' ? 80 : 60,
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          borderTopWidth: 0,
+          paddingBottom: Platform.OS === 'ios' ? 34 : 12,
+          paddingTop: 12,
+          paddingHorizontal: 8,
+          height: Platform.OS === 'ios' ? 95 : 75,
+          shadowColor: '#000000',
+          shadowOffset: {
+            width: 0,
+            height: -8,
+          },
+          shadowOpacity: 0.08,
+          shadowRadius: 24,
+          elevation: 20,
+          borderTopLeftRadius: 28,
+          borderTopRightRadius: 28,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontFamily: 'Inter-Medium',
+          fontSize: 11,
+          fontWeight: '600',
+          fontFamily: Platform.OS === 'ios' ? 'System' : 'Inter-SemiBold',
+          marginTop: 4,
+          letterSpacing: 0.2,
+        },
+        tabBarItemStyle: {
+          paddingVertical: 4,
+          borderRadius: 16,
+          marginHorizontal: 4,
+        },
+        tabBarIconStyle: {
+          marginBottom: 2,
         },
       }}
     >
@@ -26,44 +48,55 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Início',
-          tabBarIcon: ({ color, size }) => (
-            <Home color={color} size={size} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Home 
+              color={color} 
+              size={focused ? 24 : 22}
+              strokeWidth={focused ? 2.5 : 2}
+            />
           ),
         }}
       />
+      
       <Tabs.Screen
         name="reports"
         options={{
           title: 'Ocorrências',
-          tabBarIcon: ({ color, size }) => (
-            <FileText color={color} size={size} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <FileText 
+              color={color} 
+              size={focused ? 24 : 22}
+              strokeWidth={focused ? 2.5 : 2}
+            />
           ),
         }}
       />
+      
       <Tabs.Screen
         name="chat"
         options={{
-          title: 'Comunicação',
-          tabBarIcon: ({ color, size }) => (
-            <MessageCircle color={color} size={size} />
+          title: 'Suporte',
+          tabBarIcon: ({ color, size, focused }) => (
+            <MessageCircle 
+              color={color} 
+              size={focused ? 24 : 22}
+              strokeWidth={focused ? 2.5 : 2}
+              fill={focused ? color : 'none'}
+            />
           ),
         }}
       />
-      {/* <Tabs.Screen
-        name="map"
-        options={{
-          title: 'Mapa',
-          tabBarIcon: ({ color, size }) => (
-            <MapPin color={color} size={size} />
-          ),
-        }}
-      /> */}
+      
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Perfil',
-          tabBarIcon: ({ color, size }) => (
-            <User color={color} size={size} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <User 
+              color={color} 
+              size={focused ? 24 : 22}
+              strokeWidth={focused ? 2.5 : 2}
+            />
           ),
         }}
       />
