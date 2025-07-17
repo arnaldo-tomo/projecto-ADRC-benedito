@@ -35,8 +35,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
 
     // Chat routes
-    Route::get('/chat/messages', [ChatController::class, 'index']);
-    Route::post('/chat/messages', [ChatController::class, 'store']);
-    Route::post('/chat/messages/read', [ChatController::class, 'markAsRead']);
-    Route::get('/chat/messages/unread-count', [ChatController::class, 'unreadCount']);
+    // Route::get('/chat/messages', [ChatController::class, 'index']);
+    // Route::post('/chat/messages', [ChatController::class, 'store']);
+    // Route::post('/chat/messages/read', [ChatController::class, 'markAsRead']);
+    // Route::get('/chat/messages/unread-count', [ChatController::class, 'unreadCount']);
+      // Chat routes for users
+    Route::prefix('chat')->group(function () {
+        Route::get('/messages', [ChatController::class, 'getMessages']);
+        Route::post('/messages', [ChatController::class, 'sendMessage']);
+        Route::post('/messages/read', [ChatController::class, 'markAsRead']);
+        Route::get('/messages/unread-count', [ChatController::class, 'getUnreadCount']);
+    });
 });
