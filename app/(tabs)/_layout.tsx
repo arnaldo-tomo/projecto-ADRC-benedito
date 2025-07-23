@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Platform } from 'react-native';
-import { Home, FileText, MessageCircle, User } from 'lucide-react-native';
+import { Home, FileText, MessageCircle, User,Bell } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -40,7 +40,7 @@ export default function TabLayout() {
           marginHorizontal: 4,
         },
         tabBarIconStyle: {
-          marginBottom: 2,
+          marginBottom: 20,
         },
       }}
     >
@@ -105,7 +105,7 @@ export default function TabLayout() {
         options={{
           title: 'Notificações',
           tabBarIcon: ({ color, size, focused }) => (
-            <User 
+            <Bell 
               color={color} 
               size={focused ? 24 : 22}
               strokeWidth={focused ? 2.5 : 2}
