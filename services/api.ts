@@ -1,7 +1,7 @@
 // services/api.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_BASE_URL = 'http://192.168.100.12:8000/api'; // Change to your Laravel API URL
+const API_BASE_URL = 'https://www.adrc.cloudev.org/api'; // Change to your Laravel API URL
 
 class ApiService {
   private baseURL: string;
@@ -12,6 +12,7 @@ class ApiService {
 
   private async getAuthHeaders(): Promise<HeadersInit> {
     const token = await AsyncStorage.getItem('auth_token');
+    console.log('Retrieved token:', token); // Debug log
     return {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -25,6 +26,7 @@ class ApiService {
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
     const headers = await this.getAuthHeaders();
+    console.log('Making request to:', url, 'with headers:', headers); // Debug log
 
     const config: RequestInit = {
       ...options,
@@ -35,8 +37,35 @@ class ApiService {
     };
 
     try {
+      console.log('Request config:', config); // Debug log
       const response = await fetch(url, config);
       const data = await response.json();
+      console.log('Response status:', response.status, 'Data:', data); // Debug log
+
+      if (response.status === 401) {
+        try {
+          await this.refreshToken();
+          // Retry the original request with the new token
+          const retryHeaders = await this.getAuthHeaders();
+          const retryConfig: RequestInit = {
+            ...options,
+            headers: {
+              ...retryHeaders,
+              ...options.headers,
+            },
+          };
+          const retryResponse = await fetch(url, retryConfig);
+          const retryData = await retryResponse.json();
+
+          if (!retryResponse.ok) {
+            throw new Error(retryData.message || 'Request failed after token refresh');
+          }
+
+          return retryData;
+        } catch (refreshError) {
+          throw new Error('Unauthorized: Please log in again');
+        }
+      }
 
       if (!response.ok) {
         throw new Error(data.message || 'Request failed');
@@ -49,6 +78,25 @@ class ApiService {
     }
   }
 
+  async refreshToken(): Promise<AuthResponse> {
+    const refreshToken = await AsyncStorage.getItem('refresh_token');
+    if (!refreshToken) {
+      throw new Error('No refresh token available');
+    }
+
+    const response = await this.request<AuthResponse>('/refresh', {
+      method: 'POST',
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+
+    if (response.success && response.data.token) {
+      console.log('Saving new token:', response.data.token); // Debug log
+      await AsyncStorage.setItem('auth_token', response.data.token);
+    }
+
+    return response;
+  }
+
   // Auth Services
   async login(email: string, password: string): Promise<AuthResponse> {
     const response = await this.request<AuthResponse>('/login', {
@@ -57,6 +105,7 @@ class ApiService {
     });
 
     if (response.success && response.data.token) {
+      console.log('Saving token:', response.data.token); // Debug log
       await AsyncStorage.setItem('auth_token', response.data.token);
       await AsyncStorage.setItem('user_data', JSON.stringify(response.data.user));
     }
@@ -71,6 +120,7 @@ class ApiService {
     });
 
     if (response.success && response.data.token) {
+      console.log('Saving token:', response.data.token); // Debug log
       await AsyncStorage.setItem('auth_token', response.data.token);
       await AsyncStorage.setItem('user_data', JSON.stringify(response.data.user));
     }
@@ -130,6 +180,25 @@ class ApiService {
     });
   }
 
+  // Follow/Unfollow Report Services
+  async checkReportFollowing(reportId: number): Promise<{ isFollowing: boolean }> {
+    return this.request<{ isFollowing: boolean }>(`/reports/${reportId}/follow`, {
+      method: 'GET',
+    });
+  }
+
+  async followReport(reportId: number): Promise<ApiResponse<void>> {
+    return this.request<ApiResponse<void>>(`/reports/${reportId}/follow`, {
+      method: 'POST',
+    });
+  }
+
+  async unfollowReport(reportId: number): Promise<ApiResponse<void>> {
+    return this.request<ApiResponse<void>>(`/reports/${reportId}/follow`, {
+      method: 'DELETE',
+    });
+  }
+
   // Notifications Services
   async getNotifications(page?: number): Promise<ApiResponse<PaginatedData<Notification>>> {
     const query = page ? `?page=${page}` : '';
@@ -178,9 +247,7 @@ class ApiService {
     const query = `?after=${encodeURIComponent(timestamp)}`;
     return this.request<ApiResponse<NotificationModel[]>>(`/notifications/new${query}`);
   }
-
 }
-
 
 // Types
 export interface ApiResponse<T> {
@@ -197,14 +264,15 @@ export interface Notification {
   type: 'info' | 'warning' | 'success' | 'emergency';
   created_at: string;
   read_at?: string;
-//   is_read: boolean;
 }
+
 export interface AuthResponse {
   success: boolean;
   message: string;
   data: {
     user: User;
     token: string;
+    refresh_token?: string; // Added for refresh token support
   };
 }
 
@@ -300,6 +368,3 @@ export interface PaginatedData<T> {
 }
 
 export default new ApiService();
-
-
-
