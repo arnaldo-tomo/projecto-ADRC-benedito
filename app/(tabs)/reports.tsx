@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Plus, FileText, Clock, CircleCheck as CheckCircle, TriangleAlert as AlertTriangle, } from 'lucide-react-native';
+import { Plus, FileText, Clock, CircleCheck as CheckCircle, TriangleAlert as AlertTriangle, MapPin } from 'lucide-react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import apiService, { Report } from '../../services/api';
 
@@ -51,6 +51,14 @@ const ReportsScreen = () => {
     setRefreshing(false);
   };
 
+  // Navegação para os detalhes da ocorrência, passando o objeto report
+  const navigateToReportDetails = (report: Report) => {
+    router.push({
+      pathname: '/report/[id]',
+      params: { id: report.id.toString(), report: JSON.stringify(report) },
+    });
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'resolvido':
@@ -87,6 +95,22 @@ const ReportsScreen = () => {
         return '#10B981';
       default:
         return '#6B7280';
+    }
+  };
+
+
+  const formatPriorityText = (priority: string) => {
+    switch (priority) {
+      case 'vazamento':
+        return 'Vazamento';
+      case 'falta_agua':
+        return 'Falta de Água';
+      case 'pressao_baixa':
+        return 'Pressão Baixa';
+           case 'qualidade_agua':
+        return 'Qualidade da Água';
+      default:
+        return 'Outros';
     }
   };
 
@@ -190,12 +214,14 @@ const ReportsScreen = () => {
               <TouchableOpacity
                 key={report.id}
                 style={styles.reportCard}
-                onPress={() => router.push(`/report/${report.id}`)}
+                // onPress={() => console.log(report)}
+                onPress={() => navigateToReportDetails(report)}
+                activeOpacity={0.7}
               >
                 <View style={styles.reportHeader}>
                   <View style={styles.reportTitleContainer}>
-                    <Text style={styles.reportType}>{report.type_text}</Text>
                     <Text style={styles.reportTitle}>{report.title}</Text>
+                    <Text style={styles.reportType}> {formatPriorityText(report.type)}</Text>
                     <View
                       style={[
                         styles.priorityBadge,
@@ -208,7 +234,7 @@ const ReportsScreen = () => {
                           { color: getPriorityColor(report.priority) },
                         ]}
                       >
-                        {report.priority_text}Tudo
+                        {report.priority}
                       </Text>
                     </View>
                   </View>
@@ -229,6 +255,10 @@ const ReportsScreen = () => {
                   {report.description}
                 </Text>
 
+                <View style={styles.locationContainer}>
+                  <MapPin color="#6B7280" size={14} />
+                  <Text style={styles.locationText}>{report.location}</Text>
+                </View>
 
                 <View style={styles.reportFooter}>
                   <Text style={styles.dateText}>
