@@ -41,6 +41,13 @@ const HomeScreen = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  // Navegação para os detalhes da ocorrência, passando o objeto report
+  const navigateToReportDetails = (report: Report) => {
+    router.push({
+      pathname: '/report/[id]',
+      params: { id: report.id.toString(), report: JSON.stringify(report) },
+    });
+  };
 
   useEffect(() => {
     console.log('🏠 HomeScreen iniciando...');
@@ -393,7 +400,7 @@ const HomeScreen = () => {
               <TouchableOpacity
                 key={report.id}
                 style={styles.modernReportCard}
-                onPress={() => router.push(`/report/${report.id}`)}
+    onPress={() => navigateToReportDetails(report)}
                 activeOpacity={0.7}
               >
                 <View style={styles.reportCardContent}>
@@ -402,7 +409,7 @@ const HomeScreen = () => {
                     <View style={styles.reportStatusContainer}>
                       {getStatusIcon(report.status)}
                       <Text style={styles.reportStatusText}>
-                        {report.status_text}
+                        {report.status}
                       </Text>
                     </View>
                   </View>
@@ -716,10 +723,10 @@ const styles = StyleSheet.create({
   actionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 10,
   },
   gridAction: {
-    width: (width - 56) / 4,
+    width: 400 / 4,
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 16,
