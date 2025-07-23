@@ -162,6 +162,8 @@ const ReportDetailScreen = () => {
         return 'Pressão Baixa';
            case 'qualidade_agua':
         return 'Qualidade da Água';
+           case 'em_andamento':
+        return 'Em andamento';
       default:
         return 'Outros';
     }
@@ -332,18 +334,18 @@ const ReportDetailScreen = () => {
           )}
         </View>
 
-          {/* /{report.photos && report.photos.length > 0 && (
-          // <View style={styles.photosCard}>
-          //   <Text style={styles.cardTitle}>Fotos da Ocorrência</Text>
-          //   <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          //     {report.photos.map((photoUrl, index) => (
-          //       <TouchableOpacity key={index} style={styles.photoContainer}>
-          //         <Image source={{ uri: photoUrl }} style={styles.photo} />
-          //       </TouchableOpacity>
-          //     ))}
-          //   </ScrollView>
-          // </View>
-        // )} */}
+          {report.photos && report.photos.length > 0 && (
+          <View style={styles.photosCard}>
+            <Text style={styles.cardTitle}>Fotos da Ocorrência</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {report.photos.map((photoUrl, index) => (
+                <TouchableOpacity key={index} style={styles.photoContainer}>
+                  <Image source={{ uri: photoUrl }} style={styles.photo} />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
 
         <View style={styles.timelineCard}>
           <Text style={styles.cardTitle}>Histórico</Text>

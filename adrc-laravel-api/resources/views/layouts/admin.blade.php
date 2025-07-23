@@ -30,10 +30,14 @@
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 flex items-center">
-                        <div class="bg-blue-600 rounded-lg p-2">
+                        {{-- <div class="bg-blue-600 rounded-lg p-2">
                             <i data-lucide="droplets" class="w-6 h-6 text-white"></i>
-                        </div>
-                        <h1 class="ml-3 text-xl font-bold text-gray-900">AdRC Admin</h1>
+                        </div> --}}
+                                <img src="{{ asset('AdRC-1.png') }}"
+                         alt="AdRC Logo"
+                         class="w-8  relative z-10 logo-animation"
+                    >
+                        <h1 class="ml-3 text-xl font-bold text-gray-900">Águas da Região Centro (AdRC)</h1>
                     </div>
                 </div>
 

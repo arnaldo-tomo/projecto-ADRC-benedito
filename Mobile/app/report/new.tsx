@@ -311,7 +311,7 @@ const NewReportScreen = () => {
         </View>
 
         {/* Photos */}
-        {/* <View style={styles.section}>
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>Fotos (Opcional)</Text>
           <Text style={styles.sectionSubtitle}>
             Adicione até 5 fotos para ajudar nossa equipe a entender melhor o problema
@@ -356,7 +356,7 @@ const NewReportScreen = () => {
               <Text style={styles.photoButtonText}>Galeria</Text>
             </TouchableOpacity>
           </View>
-        </View> */}
+        </View>
 
         {/* Submit Button */}
         <View style={styles.submitContainer}>

@@ -400,7 +400,7 @@ const HomeScreen = () => {
               <TouchableOpacity
                 key={report.id}
                 style={styles.modernReportCard}
-    onPress={() => navigateToReportDetails(report)}
+                     onPress={() => navigateToReportDetails(report)}
                 activeOpacity={0.7}
               >
                 <View style={styles.reportCardContent}>

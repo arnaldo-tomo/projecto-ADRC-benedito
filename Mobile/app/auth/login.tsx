@@ -9,6 +9,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -62,30 +63,19 @@ const LoginScreen = () => {
           {/* Logo Section */}
           <View style={styles.logoContainer}>
             <View style={styles.logoIcon}>
-              <Droplets color="#FFFFFF" size={32} />
+            <Image style={{ width:300, height:200 }} source={require('../../assets/images/adaptive-icon.png')}/>
             </View>
-            <Text style={styles.logoText}>AdRC</Text>
-            <Text style={styles.logoSubtext}>Águas da Região Centro</Text>
           </View>
 
           {/* Welcome Text */}
           <View style={styles.welcomeContainer}>
-            <Text style={styles.welcomeTitle}>Bem-vindo!</Text>
+            {/* <Text style={styles.welcomeTitle}>Bem-vindo!</Text> */}
             <Text style={styles.welcomeSubtitle}>
-              Faça login na sua conta para continuar
+              {/* Faça login na sua conta para continuar */}
             </Text>
           </View>
 
-          {/* Demo Info */}
-          <View style={styles.demoContainer}>
-            <Text style={styles.demoTitle}>💡 Dica para teste:</Text>
-            <Text style={styles.demoText}>
-              Use qualquer email e senha válidos para entrar
-            </Text>
-            <Text style={styles.demoText}>
-              Exemplo: admin@adrc.com / password123
-            </Text>
-          </View>
+  
 
           {/* Form */}
           <View style={styles.formContainer}>
@@ -178,12 +168,13 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: 'center',
     marginBottom: 32,
+    // width:20,
   },
   logoIcon: {
-    width: 80,
-    height: 80,
+    width: 50,
+    height: 50,
     borderRadius: 40,
-    backgroundColor: '#1E40AF',
+    // backgroundColor: '#1E40AF',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,

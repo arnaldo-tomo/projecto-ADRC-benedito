@@ -87,12 +87,13 @@ export default function TabLayout() {
         }}
       />
       
+
       <Tabs.Screen
-        name="profile"
+        name="notifications"
         options={{
-          title: 'Perfil',
+          title: 'Notificações',
           tabBarIcon: ({ color, size, focused }) => (
-            <User 
+            <Bell 
               color={color} 
               size={focused ? 24 : 22}
               strokeWidth={focused ? 2.5 : 2}
@@ -100,12 +101,13 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="notifications"
+
+            <Tabs.Screen
+        name="profile"
         options={{
-          title: 'Notificações',
+          title: 'Perfil',
           tabBarIcon: ({ color, size, focused }) => (
-            <Bell 
+            <User 
               color={color} 
               size={focused ? 24 : 22}
               strokeWidth={focused ? 2.5 : 2}
